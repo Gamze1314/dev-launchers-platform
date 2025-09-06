@@ -1,34 +1,18 @@
 import { ChevronDown, Menu, X, User, LogOut, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import type MobileNavigationDropdownItem from 'types/MobileNavigationDropdownItem';
 import logo from '../../../assets/images/logo-monogram.png';
 import { useUserDataContext } from '../../../context/UserDataContext';
 import Logout from '../../../utils/Logout';
 import NotificationPopover from './NotificationPopover';
-type ProfileDropdownProps = {
-  userData: {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
-    bio: string;
-    profilePictureUrl: string;
-    socialMediaLinks: never[];
-    discord: {
-      id: number;
-      avatar: string;
-      username: string;
-      discriminator: string;
-    };
-    interests: never[];
-  };
-};
+
 // Centralized styles
 const styles = {
   // Navigation styles
   nav: 'sticky relative top-0 flex h-16 items-center justify-between bg-black px-4 md:px-8 z-50 text-lg sm:text-sm',
   navItem:
-    'text-gray-400 font-normal transition-all duration-200 hover:text-white hover:font-semibold active:text-white active:font-semibold',
+    'cursor-pointer text-gray-400 font-normal transition-all duration-200 hover:text-white hover:font-semibold active:text-white active:font-semibold',
 
   // Logo styles
   logoContainer: 'flex items-center gap-4',
@@ -48,7 +32,7 @@ const styles = {
     'text-gray-300 font-normal transition-all duration-200 hover:text-white hover:text-white hover:font-semibold flex items-center gap-2',
   dropdownContent: 'absolute top-8 left-0 w-full border-t border-gray-800 mt-8',
   dropdownItem:
-    'block rounded-lg bg-[#1C1C1C] p-6 transition-colors hover:bg-gray-800',
+    'cursor-pointer block rounded-lg bg-[#1C1C1C] p-6 transition-colors hover:bg-gray-800',
   dropdownGrid:
     'grid grid-cols-1 lg:grid-cols-2 gap-4 w-full lg:w-[900px] bg-black p-4 mt-2 mx-auto rounded-xl',
 
@@ -112,7 +96,12 @@ const projectItems = [
   },
 ];
 
-const ProfileDropdown = ({ userData }: ProfileDropdownProps) => {
+interface UserData {
+  name: string;
+  profilePictureUrl: string;
+}
+
+const ProfileDropdown = ({ userData }: { userData: UserData }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -137,7 +126,7 @@ const ProfileDropdown = ({ userData }: ProfileDropdownProps) => {
 
   return (
     <div className={styles.dropdownContainer} ref={dropdownRef}>
-      <div className="text-white mr-6">
+      <div className="mr-6 text-white">
         <NotificationPopover />
       </div>
       <button
@@ -170,13 +159,13 @@ const ProfileDropdown = ({ userData }: ProfileDropdownProps) => {
             <Link href="/users/me">
               <p className={styles.profileMenuItem}>
                 <User className={styles.icon} />
-                <span>Profile</span>
+                <span className="cursor-pointer">Profile</span>
               </p>
             </Link>
-            <Link href="ideaspace/dashboard">
+            <Link href="/ideaspace/dashboard">
               <p className={styles.profileMenuItem}>
                 <Lightbulb className={styles.icon} />
-                <span>Idea Dashboard</span>
+                <span className="cursor-pointer">Idea Dashboard</span>
               </p>
             </Link>
             <button
@@ -193,13 +182,22 @@ const ProfileDropdown = ({ userData }: ProfileDropdownProps) => {
   );
 };
 
-const DropdownMenu = ({ trigger, items = projectItems }) => {
+const DropdownMenu = ({
+  trigger,
+  items = projectItems,
+}: {
+  trigger: React.ReactNode;
+  items: typeof projectItems;
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const dropdownRef = React.useRef(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -245,13 +243,27 @@ const DropdownMenu = ({ trigger, items = projectItems }) => {
   );
 };
 
-const MobileDropdown = ({ title, items }) => {
+interface DropdownItem {
+  label: string;
+  href: string;
+}
+
+const MobileDropdown = ({
+  title,
+  items,
+}: {
+  title: string;
+  items: DropdownItem[];
+}) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const dropdownRef = React.useRef(null);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -278,7 +290,7 @@ const MobileDropdown = ({ title, items }) => {
       </button>
 
       <div className={`mt-2 space-y-2 pl-4 ${isOpen ? 'block' : 'hidden'}`}>
-        {items.map((item, index) => (
+        {items.map((item: MobileNavigationDropdownItem, index: number) => (
           <Link key={index} href={item.href}>
             <p className={styles.mobileMenuItem}>{item.label}</p>
           </Link>

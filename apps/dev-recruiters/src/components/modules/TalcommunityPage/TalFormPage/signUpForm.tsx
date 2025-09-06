@@ -1,32 +1,35 @@
 import { atoms, organisms } from '@devlaunchers/components/src/components';
 import FormErrorScroller from '@devlaunchers/components/src/utils/formErrorScroller';
 import { agent } from '@devlaunchers/utility';
-import { Field, Form, Formik, FormikHelpers, useFormik } from 'formik';
+import { Field, Form, Formik, FormikHelpers } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
 import ConfirmationModal from '../../DetailedPage/Confirmation/ConfirmationModal';
 import { useRouter } from 'next/router';
 import BoxContainer from '../../../common/BoxContainer';
 import { Wrapper } from '../StyledTalcommunityPage';
-import { DlTalCommUser } from '@devlaunchers/models/dltalcommuser';
 
-// interface FormFields extends Omit<NewApplicant, 'level'> {
-//   level: NewApplicant['level'] | '';
-// }
 interface Props {
   handleCloseModal: () => void;
 }
 
-const SignupSchema = Yup.object().shape({
-  name: Yup.string().required('Name Field Entry is Required'),
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Email Field Entry is Required'),
-  roles: Yup.string().required('Roles Field Entry is Required'),
-  skills: Yup.string().required('Skills Field Entry is Required'),
-});
+interface TalCommFormValues {
+  name: string;
+  emailID: string;
+  skills: string;
+  roles: string;
+}
 
 export default function TalCommForm({ handleCloseModal }: Props) {
+  const SignupSchema = Yup.object().shape({
+    name: Yup.string().required('Name Field Entry is Required'),
+    emailID: Yup.string()
+      .email('Invalid email')
+      .required('Email Field Entry is Required'),
+    roles: Yup.string().required('Roles Field Entry is Required'),
+    skills: Yup.string().required('Skills Field Entry is Required'),
+  });
+
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [ageCheckbox, setAgeCheckbox] = useState<boolean | undefined>();
   const [termsCheckbox, setTermsCheckbox] = useState<boolean | undefined>();
@@ -50,63 +53,58 @@ export default function TalCommForm({ handleCloseModal }: Props) {
         <Formik
           initialValues={{
             name: '',
-            email: '',
+            emailID: '',
             roles: '',
             skills: '',
           }}
           onSubmit={(
-            values: DlTalCommUser,
-            { setSubmitting }: FormikHelpers<DlTalCommUser>
+            values: TalCommFormValues,
+            { setSubmitting }: FormikHelpers<TalCommFormValues>
           ) => {
             setSubmitting(true);
+            console.log('Formik Values at Submit:', values);
 
-            // Log the data being sent to the backend
             console.log('Data being sent to backend:', {
               data: {
                 name: values.name,
-                emailID: values.email,
+                emailID: values.emailID,
                 skills: values.skills,
                 roles: values.roles,
               },
             });
 
-            agent.Talcommuser.post({
+            agent.DlTalcommuser.post({
               data: {
                 name: values.name,
-                emailID: values.email,
+                emailID: values.emailID,
                 skills: values.skills,
                 roles: values.roles,
               },
             })
               .then((res) => {
+                console.log(res);
                 handleOpenConfirmationModal();
                 router.push('/join/oldjoin');
                 setSubmitting(false);
               })
               .catch((error) => {
                 setSubmitting(false);
-                console.log(error.response);
-                console.log(error.response?.data);
-                console.log(error.response?.status);
+                console.error(
+                  'Submission Error:',
+                  error.response || error.message || error
+                );
               });
           }}
           validationSchema={SignupSchema}
         >
-          {({
-            errors,
-            setFieldValue,
-            touched,
-            values,
-            validateOnChange,
-            handleChange,
-            handleSubmit,
-          }) => (
+          {({ errors, touched, isSubmitting }) => (
             <atoms.Box paddingInline="0.5rem" justifyContent="center">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M6 18L18 6M6 6l12 12"
               />
+
               <Form>
                 <atoms.Box flexDirection="column" margin="auto">
                   <atoms.Box
@@ -121,23 +119,19 @@ export default function TalCommForm({ handleCloseModal }: Props) {
                       placeholder="John Smith"
                       id="name"
                       name="name"
-                      value={values.name}
                       required
                       touched={touched['name']}
                       error={errors.name}
-                      onChange={handleChange}
                     />
                     <Field
                       as={organisms.FormField}
                       label="Your Email"
                       placeholder="johnsmith@gmail.com"
-                      id="email"
-                      name="email"
-                      value={values.email}
+                      id="emailID"
+                      name="emailID"
                       required
-                      touched={touched['email']}
-                      error={errors.email}
-                      onChange={handleChange}
+                      touched={touched['emailID']}
+                      error={errors.emailID}
                     />
 
                     <Field
@@ -147,10 +141,8 @@ export default function TalCommForm({ handleCloseModal }: Props) {
                       required
                       id="skills"
                       name="skills"
-                      value={values.skills}
                       error={errors.skills}
                       touched={touched.skills}
-                      onChange={handleChange}
                     />
                     <Field
                       as={organisms.FormField}
@@ -159,10 +151,8 @@ export default function TalCommForm({ handleCloseModal }: Props) {
                       required
                       id="roles"
                       name="roles"
-                      value={values.roles}
                       error={errors.roles}
                       touched={touched.roles}
-                      onChange={handleChange}
                     />
 
                     <atoms.Typography type="p">
@@ -172,37 +162,32 @@ export default function TalCommForm({ handleCloseModal }: Props) {
                     <atoms.Checkbox
                       label="I am 18 years old or older."
                       disabled={false}
+                      checked={ageCheckbox}
                       onChange={handleSetAgeCheckbox}
                       required
                     />
                     <atoms.Checkbox
                       label="I have read and agreed to the terms and conditions"
                       disabled={false}
+                      checked={termsCheckbox}
                       onChange={handleSetTermsCheckbox}
                       required
                     />
 
                     <atoms.Box maxWidth="50%">
-                      <atoms.Button
-                        buttonSize="standard"
-                        buttonType="primary"
-                        as="a"
-                        type="submit"
-                        onClick={handleSubmit}
-                      >
+                      <button type="submit" disabled={isSubmitting}>
                         SUBMIT
-                      </atoms.Button>
+                      </button>
                     </atoms.Box>
                   </atoms.Box>
                 </atoms.Box>
+                <FormErrorScroller focusAfterScroll />
                 <ConfirmationModal
                   showModal={showConfirmationModal}
                   handleOpenModal={handleOpenConfirmationModal}
                   handleCloseModal={handleCloseModal}
                 />
               </Form>
-              {/* Move FormErrorScroller inside Formik's rendering context */}
-              {/* <FormErrorScroller focusAfterScroll /> */}
             </atoms.Box>
           )}
         </Formik>

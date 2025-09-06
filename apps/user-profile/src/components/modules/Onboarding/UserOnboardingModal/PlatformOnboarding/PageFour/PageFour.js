@@ -53,10 +53,12 @@ export default function PageThree() {
     <div className="flex flex-col gap-20">
       <div className="flex flex-col text-center">
         <div>
-          <Typography type="p">ABOUT YOU</Typography>
-          <Typography type="h3">Select Your Interests Below</Typography>
+          <Typography variant="secondary">ABOUT YOU</Typography>
+          <Typography textweight="light" textalign="center" type="h3">
+            Select Your Interests Below
+          </Typography>
         </div>
-        <Typography className="m-0" type="p">
+        <Typography className="m-0" variant="secondary">
           We’ll use this to find you the right fit when pairing with other
           members
         </Typography>

@@ -42,16 +42,17 @@ const ProductCardLong = ({
             }}
           >
             <Typography
-              type="h1"
+              as="h1"
               css={{
                 color: theme.colors.GREYSCALE_WHITE,
                 margin: 0,
               }}
+              variant="primary"
             >
               {title}
             </Typography>
             <Typography
-              type="subtitle"
+              variant="secondary"
               css={{ color: theme.colors.GREYSCALE_WHITE }}
             >
               {subtitle}
@@ -132,7 +133,7 @@ const ProductCardLong = ({
             >
               <Button
                 as="a"
-                type={defaultButton ? 'secondary' : 'alt-primary'}
+                type={defaultButton ? 'secondary' : 'primary'}
                 size="large"
                 onClick={button1.onClick}
                 href={button1.href}
@@ -147,7 +148,7 @@ const ProductCardLong = ({
 
               <Button
                 as="a"
-                type={defaultButton ? 'primary' : 'alt-primary'}
+                type={defaultButton ? 'primary' : 'primary'}
                 size="large"
                 onClick={button2.onClick}
                 href={button2.href}

@@ -26,28 +26,36 @@ export default function IntroductionModal() {
     >
       <div className="flex flex-col gap-10 h-full py-12 px-16">
         <div>
-          <Typography type="h3">Welcome to Dev Launchers</Typography>
+          <Typography textweight="light" textalign="center" type="h3">
+            Welcome to Dev Launchers
+          </Typography>
           <RainbowBar height="6px" />
         </div>
         <div className="flex flex-col gap-3">
-          <Typography type="p">
+          <Typography variant="secondary">
             We'll introduce you to Dev Launchers and set up your profile for
             team collaboration.
           </Typography>
-          <Typography type="p">
+          <Typography variant="secondary">
             Rest assured, we'll guide you through each step of the process.
           </Typography>
         </div>
         <div className="flex flex-col gap-4">
-          <Button buttonType="primary" buttonSize="xl" onClick={onGetStarted}>
-            GET STARTED (TAKES 2-5 MINUTES)
+          <Button
+            type="primary"
+            size="large"
+            color="nebula"
+            onClick={onGetStarted}
+          >
+            Get Started (Takes 2-5 Minutes)
           </Button>
           <Button
-            buttonType="alternative"
-            buttonSize="xl"
+            type="secondary"
+            color="nebula"
+            size="large"
             onClick={onSetUpLater}
           >
-            SET UP LATER
+            Set Up Later
           </Button>
         </div>
       </div>

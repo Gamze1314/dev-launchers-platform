@@ -8,6 +8,7 @@ import {
   Save,
   Notification,
   DlTalCommUser,
+  TalCommUser,
 } from '@devlaunchers/models';
 import { Comment } from '@devlaunchers/models/comment';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -20,14 +21,14 @@ axios.defaults.withCredentials = true;
  * Configure the request headers with Authorization Header using the authentication token
  */
 
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-  console.log(token);
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// axios.interceptors.request.use((config) => {
+//   const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+//   console.log(token);
+//   if (token && config.headers) {
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+//   return config;
+// });
 
 axios.interceptors.response.use(
   async (response) => {
@@ -87,9 +88,9 @@ const requests = {
     axios.patch<T>(url, body).then(responseBody),
   delete: <T>(url: string, body?: {}) =>
     axios.delete<T>(url, { data: body }).then(responseBody),
-  postForm: (url: string, data: FormData) =>
+  postForm: <T>(url: string, data: FormData) =>
     axios
-      .post(url, data, {
+      .post<T>(url, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .then(responseBody),
@@ -190,6 +191,22 @@ const Talcommuser = {
   }) => requests.post('/dl-tal-communities', body),
 };
 
+const GoogledriveFile = {
+  post: async (data: FormData) => {
+    return await requests.postForm<FormData>(`/googledrive/`, data);
+  },
+  delete: async (id: string) => {
+    return await requests.delete('/googledrive/' + id);
+  },
+};
+
+const DlTalcommuser = {
+  get: () => requests.get<TalCommUser>('/dl-tal-communities'),
+  post: (body: {
+    data: { name: string; emailID: string; skills: string; roles: string };
+  }) => requests.post('/dl-tal-communities', body),
+};
+
 const agent = {
   Opportunities,
   Projects,
@@ -203,6 +220,8 @@ const agent = {
   Profiles,
   requests,
   Talcommuser,
+  GoogledriveFile,
+  DlTalcommuser,
 };
 
 export default agent;

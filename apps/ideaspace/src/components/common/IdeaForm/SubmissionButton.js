@@ -4,9 +4,10 @@ import { atoms } from '@devlaunchers/components/src/components';
 const SubmissionButton = ({ sending, onClick }) => {
   return (
     <atoms.Button
-      buttonSize="standard"
-      buttonType="primary"
-      type="submit"
+      color="nebula"
+      size="standard"
+      type="primary"
+      mode="light"
       onClick={onClick}
     >
       {' '}
